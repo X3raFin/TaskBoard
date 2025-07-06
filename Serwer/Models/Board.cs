@@ -1,5 +1,6 @@
 public class Board
 {
-	public string? name { get; set; }
-	public int colsNumber { get; set; }
+	public int Id { get; set; }
+	public string? Name { get; set; }
+	public int ColsNumber { get; set; }
 }

@@ -1,6 +1,8 @@
 public class Task
 {
-	public string? name { get; set; }
-	public string? descriptions { get; set; }
-	public int order { get; set; }
+	public int Id { get; set; }
+	public int ColumnId { get; set; }
+	public string? Name { get; set; }
+	public string? Descriptions { get; set; }
+	public int Order { get; set; }
 }
