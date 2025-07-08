@@ -1,0 +1,18 @@
+body{
+	margin: 0px;
+	padding: 0px;
+}
+
+#Boards{
+	display: flex;
+}
+
+.Board{
+	border-radius: 20px;
+	background-color: red;
+	display: inline-block;
+}
+
+.Board:hover{
+	cursor: pointer;
+}

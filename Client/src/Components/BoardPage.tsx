@@ -1,28 +1,47 @@
 import { useEffect, useState } from "react";
-import "../App.css";
+import { useParams } from "react-router-dom";
+
+interface Columns {
+  id: number;
+  boardId: number;
+  name: string;
+  taskNumber: number;
+  order: number;
+}
 
 function BoardPage() {
-  const [boards, setBoards] = useState();
-
-  const apiUrl = "http://localhost:5112/api/TaskBoard/boards";
+  const params = useParams();
+  const [cols, setCols] = useState<Columns[]>([]);
+  const url = "http://localhost:5112/api/TaskBoard/columns/";
 
   useEffect(() => {
-    const fetchedData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(url + params.BoardId);
         if (!response.ok) {
-          return console.error("Prośba http nie uzyskała kodu 200.");
+          console.error("Operacja nie dostała kodu 200.");
         }
         const json = await response.json();
-        setBoards(json);
+        setCols(json);
       } catch (error) {
-        return console.error("Prośba zakończona niepowodzeniem: " + error);
+        console.error("Wystąpił problem: " + error);
       }
     };
-    fetchedData();
+
+    fetchData();
   }, []);
 
-  return <h1>{boards}</h1>;
+  return (
+    <>
+      {cols.map((col) => {
+        return (
+          <div key={col.id}>
+            <h3>{col.name}</h3>
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 export default BoardPage;
