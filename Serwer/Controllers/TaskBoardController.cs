@@ -2,6 +2,7 @@ using TaskBoard.Serwer.Models;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace Serwer.Controllers
 {
@@ -17,22 +18,15 @@ namespace Serwer.Controllers
 		}
 
 		[HttpGet("columns/{BoardId}")]
-		public List<Column> GetColumns(int BoardId)
+		public Dictionary<string, List<ToDo>> GetColumns(int BoardId)
 		{
-			var answer = new List<Column>();
-			foreach (Column column in InMemoryDataStore.Columns)
+			var columns = InMemoryDataStore.Columns.Where(col => col.BoardId == BoardId).OrderBy(col => col.Order).ToList();
+			var answer = new Dictionary<string, List<ToDo>>();
+			foreach (Column c in columns)
 			{
-				if (column.BoardId == BoardId)
-					answer.Add(column);
+				answer.Add(c.Name, InMemoryDataStore.ToDos.Where(t => t.ColumnId == c.Id).OrderBy(t => t.Order).ToList());
 			}
-			var sortedAnswer = answer.OrderBy(ans => ans.Order).ToList();
-			return sortedAnswer;
-		}
-
-		[HttpGet("todos")]
-		public List<ToDo> GetToDos()
-		{
-			return InMemoryDataStore.ToDos;
+			return answer;
 		}
 	}
 }
