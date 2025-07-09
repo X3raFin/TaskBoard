@@ -3,6 +3,10 @@ body{
 	padding: 0px;
 }
 
+#root{
+	margin: 0px;
+}
+
 #Boards{
 	display: flex;
 }
@@ -15,4 +19,32 @@ body{
 
 .Board:hover{
 	cursor: pointer;
+}
+
+h3, h4{
+	margin: 0px;
+}
+
+
+#Columns{
+	width: 100vw;
+	height: 80vh;
+	margin: 20px 0vh 0px 0px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.Column{
+	margin-right: 3vw;
+	margin-left: 3vw;
+	width: 10vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.Task{
+	border: 2px solid red;
+	margin: 1vh 0vh 1vh 0vh;
 }

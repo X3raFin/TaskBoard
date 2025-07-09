@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "../App.css";
 
-interface Columns {
+interface ToDos {
   id: number;
-  boardId: number;
+  columnId: number;
   name: string;
-  taskNumber: number;
+  descriptions: string;
   order: number;
 }
 
+type ColumnsStuff = Record<string, ToDos[]>;
+
 function BoardPage() {
   const params = useParams();
-  const [cols, setCols] = useState<Columns[]>([]);
+  const [cols, setCols] = useState<ColumnsStuff>({});
   const url = "http://localhost:5112/api/TaskBoard/columns/";
 
   useEffect(() => {
@@ -21,7 +24,7 @@ function BoardPage() {
         if (!response.ok) {
           console.error("Operacja nie dostała kodu 200.");
         }
-        const json = await response.json();
+        const json: ColumnsStuff = await response.json();
         setCols(json);
       } catch (error) {
         console.error("Wystąpił problem: " + error);
@@ -30,17 +33,26 @@ function BoardPage() {
 
     fetchData();
   }, []);
+  console.log(cols);
 
   return (
-    <>
-      {cols.map((col) => {
+    <div id="Columns">
+      {Object.keys(cols).map((columnName) => {
         return (
-          <div key={col.id}>
-            <h3>{col.name}</h3>
+          <div className="Column" key={columnName}>
+            <h3>{columnName}</h3>
+            {cols[columnName].map((t) => {
+              return (
+                <div key={t.id} className="Task">
+                  <h4>{t.name}</h4>
+                  <p>{t.descriptions}</p>
+                </div>
+              );
+            })}
           </div>
         );
       })}
-    </>
+    </div>
   );
 }
 
