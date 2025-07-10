@@ -3,7 +3,7 @@ public static class InMemoryDataStore
 {
 	public static List<Board> Boards { get; set; } = new List<Board>
 	{
-		new Board { Id = 1, Name = "Główna tablica", ColsNumber = 1, }
+		new Board { Id = 1, Name = "Główna tablica", ColsNumber = 2, }
 
 	};
 

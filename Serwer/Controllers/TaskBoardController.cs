@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
+using Microsoft.VisualBasic;
 
 namespace Serwer.Controllers
 {
@@ -24,9 +25,20 @@ namespace Serwer.Controllers
 			var answer = new Dictionary<string, List<ToDo>>();
 			foreach (Column c in columns)
 			{
-				answer.Add(c.Name, InMemoryDataStore.ToDos.Where(t => t.ColumnId == c.Id).OrderBy(t => t.Order).ToList());
+				if (c.Name is not null)
+					answer.Add(c.Name, InMemoryDataStore.ToDos.Where(t => t.ColumnId == c.Id).OrderBy(t => t.Order).ToList());
 			}
 			return answer;
+		}
+		[HttpPost("/{NewBoard}")]
+		public string CreateBoard(Board NewBoard)
+		{
+			if (NewBoard is not null)
+			{
+				InMemoryDataStore.Boards.Add(NewBoard);
+				return "Nowa tablica została dodana pomyślnie.";
+			}
+			return "Coś poszło nie tak.";
 		}
 	}
 }
