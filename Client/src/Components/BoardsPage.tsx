@@ -13,11 +13,26 @@ function BoardPage() {
   const [status, setStatus] = useState<boolean>(false);
   const [newBoardName, setNewBoardName] = useState<string>("");
 
-  const apiUrl = "http://localhost:5112/api/TaskBoard/boards";
+  const apiUrl = "http://localhost:5112/api/TaskBoard";
 
-  const creatingFormHandler = (name: string) => {
-    if (status == false) return;
-    console.log(name);
+  const creatingFormHandler = async () => {
+    if (status === false) return;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Name: newBoardName }),
+      });
+      if (!response.ok)
+        return console.error("Operacja nie zakończyła się kodem 200.");
+    } catch (error) {
+      return console.error("Coś poszło nie tak: " + error);
+    } finally {
+      setNewBoardName("");
+      setStatus(false);
+    }
   };
 
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +53,7 @@ function BoardPage() {
       }
     };
     fetchedData();
-  }, []);
+  }, [creatingFormHandler]);
 
   return (
     <div id="Boards">
@@ -67,7 +82,7 @@ function BoardPage() {
           value={newBoardName}
           onChange={changeNameValue}
         />
-        <button id="submit" onClick={() => creatingFormHandler(newBoardName)}>
+        <button id="submit" onClick={() => creatingFormHandler()}>
           Stwórz
         </button>
       </div>

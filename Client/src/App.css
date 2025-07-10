@@ -10,6 +10,7 @@ body{
 #Boards{
 	display: flex;
 	align-items: flex-start;
+	flex-wrap: wrap;
 }
 
 #Boards button{
