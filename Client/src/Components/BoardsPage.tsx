@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../App.css";
 import { Link } from "react-router-dom";
 
@@ -10,8 +10,19 @@ interface Board {
 
 function BoardPage() {
   const [boards, setBoards] = useState<Board[]>([]);
+  const [status, setStatus] = useState<boolean>(false);
+  const [newBoardName, setNewBoardName] = useState<string>("");
 
   const apiUrl = "http://localhost:5112/api/TaskBoard/boards";
+
+  const creatingFormHandler = (name: string) => {
+    if (status == false) return;
+    console.log(name);
+  };
+
+  const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewBoardName(event.target.value);
+  };
 
   useEffect(() => {
     const fetchedData = async () => {
@@ -30,7 +41,7 @@ function BoardPage() {
   }, []);
 
   return (
-    <div itemID="Boards">
+    <div id="Boards">
       {boards.map((board) => {
         return (
           <Link to={"/column/" + board.id} key={board.id}>
@@ -41,7 +52,25 @@ function BoardPage() {
           </Link>
         );
       })}
-      <button>+</button>
+      <button onClick={() => setStatus(!status)}>+</button>
+      <div
+        id="CreatingForm"
+        style={{ display: status === false ? "none" : "flex" }}
+      >
+        <button id="Exit" onClick={() => setStatus(false)}>
+          X
+        </button>
+        Nazwa nowej tablicy:
+        <input
+          type="text"
+          id="Nazwa"
+          value={newBoardName}
+          onChange={changeNameValue}
+        />
+        <button id="submit" onClick={() => creatingFormHandler(newBoardName)}>
+          Stwórz
+        </button>
+      </div>
     </div>
   );
 }
