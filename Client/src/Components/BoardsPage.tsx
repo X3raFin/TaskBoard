@@ -41,6 +41,7 @@ function BoardPage() {
           </Link>
         );
       })}
+      <button>+</button>
     </div>
   );
 }

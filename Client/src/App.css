@@ -9,12 +9,22 @@ body{
 
 #Boards{
 	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+#Boards button{
+	padding: 0px;
 }
 
 .Board{
 	border-radius: 20px;
 	background-color: red;
 	display: inline-block;
+}
+
+.Board h3, .Board h4{
+	margin: 20px;
 }
 
 .Board:hover{
@@ -47,4 +57,25 @@ h3, h4{
 .Task{
 	border: 2px solid red;
 	margin: 1vh 0vh 1vh 0vh;
+}
+
+#Nav
+{
+	width: 100vw;
+	height: 5vh;
+	background-color: red;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+#Nav h2{
+	position: relative;
+	left: 15px;
+}
+
+a{
+	text-decoration: none;
+	color: black;
 }
