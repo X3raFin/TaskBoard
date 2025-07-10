@@ -12,7 +12,7 @@ namespace Serwer.Controllers
 	public class TaskBoardController : ControllerBase
 	{
 
-		[HttpGet("boards")]
+		[HttpGet]
 		public List<Board> GetBoards()
 		{
 			return InMemoryDataStore.Boards;
@@ -30,15 +30,20 @@ namespace Serwer.Controllers
 			}
 			return answer;
 		}
-		[HttpPost("/{NewBoard}")]
-		public string CreateBoard(Board NewBoard)
+		[HttpPost]
+		public IActionResult CreateBoard([FromBody] CreateBoardDto dto)
 		{
-			if (NewBoard is not null)
+			var LastBoard = InMemoryDataStore.Boards.LastOrDefault();
+			if (dto is not null)
 			{
-				InMemoryDataStore.Boards.Add(NewBoard);
-				return "Nowa tablica została dodana pomyślnie.";
+				InMemoryDataStore.Boards.Add(new Board { Id = LastBoard.Id + 1, Name = dto.Name, ColsNumber = 0 });
+				return StatusCode(201, "Nowa tablica została dodana pomyślnie.");
 			}
-			return "Coś poszło nie tak.";
+			return BadRequest("Coś poszło nie tak.");
 		}
+	}
+	public class CreateBoardDto
+	{
+		public string Name { get; set; }
 	}
 }
