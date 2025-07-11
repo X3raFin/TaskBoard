@@ -40,12 +40,12 @@ function BoardPage() {
       });
       if (!response.ok)
         return console.error("Operacja nie zakończyła się kodem 200.");
+      else fetchedData();
     } catch (error) {
       return console.error("Coś poszło nie tak: " + error);
     } finally {
       setNewBoardName("");
       setStatus(false);
-      fetchedData();
     }
   };
 

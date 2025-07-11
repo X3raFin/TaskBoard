@@ -17,6 +17,7 @@ function BoardPage() {
   const [status, setStatus] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const [cols, setCols] = useState<ColumnsStuff>({});
+
   const url = "http://localhost:5112/api/TaskBoard/columns/";
 
   const fetchData = async () => {
@@ -43,13 +44,12 @@ function BoardPage() {
       });
       if (!response.ok) {
         return console.error("Prośba nie została zakończona kodem 200.");
-      }
+      } else fetchData();
     } catch (error) {
       console.error("Wystąpił problem: " + error);
     } finally {
       setStatus(false);
       setNewColumnName("");
-      fetchData();
     }
   };
 
