@@ -9,8 +9,8 @@ public static class InMemoryDataStore
 
 	public static List<Column> Columns { get; set; } = new List<Column>
 	{
-		new Column { Id = 2, BoardId = 1, Name = "Podstawowa2", TasksNumber = 1, Order = 2 },
-		new Column { Id = 1, BoardId = 1, Name = "Podstawowa", TasksNumber = 2, Order = 1 },
+		new Column { Id = 1, BoardId = 1, Name = "Podstawowa2", TasksNumber = 1, Order = 2 },
+		new Column { Id = 2, BoardId = 1, Name = "Podstawowa", TasksNumber = 2, Order = 1 },
 	};
 
 	public static List<ToDo> ToDos { get; set; } = new List<ToDo>

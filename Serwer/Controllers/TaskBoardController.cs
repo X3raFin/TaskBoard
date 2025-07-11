@@ -18,6 +18,12 @@ namespace Serwer.Controllers
 			return InMemoryDataStore.Boards;
 		}
 
+		[HttpGet("/columns")]
+		public List<Column> GetColumns()
+		{
+			return InMemoryDataStore.Columns;
+		}
+
 		[HttpGet("columns/{BoardId}")]
 		public Dictionary<string, List<ToDo>> GetColumns(int BoardId)
 		{
@@ -30,20 +36,33 @@ namespace Serwer.Controllers
 			}
 			return answer;
 		}
+
 		[HttpPost]
-		public IActionResult CreateBoard([FromBody] CreateBoardDto dto)
+		public IActionResult CreateBoard([FromBody] CreateDto dto)
 		{
 			var LastBoard = InMemoryDataStore.Boards.LastOrDefault();
-			if (dto is not null)
+			if (dto is not null && LastBoard is not null)
 			{
 				InMemoryDataStore.Boards.Add(new Board { Id = LastBoard.Id + 1, Name = dto.Name, ColsNumber = 0 });
 				return StatusCode(201, "Nowa tablica została dodana pomyślnie.");
 			}
 			return BadRequest("Coś poszło nie tak.");
 		}
+
+		[HttpPost("columns/{BoardId}")]
+		public IActionResult CreateColumn(int BoardId, [FromBody] CreateDto dto)
+		{
+			var LastColumn = InMemoryDataStore.Columns.LastOrDefault();
+			if (dto is not null && LastColumn is not null)
+			{
+				InMemoryDataStore.Columns.Add(new Column { Id = LastColumn.Id + 1, BoardId = BoardId, Name = dto.Name, TasksNumber = 0, Order = LastColumn.Order + 1 });
+				return StatusCode(201, "Nowa kolumna została pomyślnie dodana.");
+			}
+			return BadRequest("Coś poszło nie tak.");
+		}
 	}
-	public class CreateBoardDto
+	public class CreateDto
 	{
-		public string Name { get; set; }
+		public string? Name { get; set; }
 	}
 }
