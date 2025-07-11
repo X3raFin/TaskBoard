@@ -15,6 +15,19 @@ function BoardPage() {
 
   const apiUrl = "http://localhost:5112/api/TaskBoard";
 
+  const fetchedData = async () => {
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        return console.error("Prośba http nie uzyskała kodu 200.");
+      }
+      const json = await response.json();
+      setBoards(json);
+    } catch (error) {
+      return console.error("Prośba zakończona niepowodzeniem: " + error);
+    }
+  };
+
   const creatingFormHandler = async () => {
     if (status === false) return;
     try {
@@ -32,6 +45,7 @@ function BoardPage() {
     } finally {
       setNewBoardName("");
       setStatus(false);
+      fetchedData();
     }
   };
 
@@ -40,20 +54,8 @@ function BoardPage() {
   };
 
   useEffect(() => {
-    const fetchedData = async () => {
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          return console.error("Prośba http nie uzyskała kodu 200.");
-        }
-        const json = await response.json();
-        setBoards(json);
-      } catch (error) {
-        return console.error("Prośba zakończona niepowodzeniem: " + error);
-      }
-    };
     fetchedData();
-  }, [creatingFormHandler]);
+  }, []);
 
   return (
     <div id="Boards">
