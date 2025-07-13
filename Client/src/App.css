@@ -17,7 +17,7 @@ body{
 	margin: 5px 8px;
 }
 
-#CreatingForm{
+#CreatingForm, #CreatingTaskForm{
 	position: fixed;
 	width: 380px;
 	left: 50%;
@@ -29,13 +29,13 @@ body{
 	align-items: center;
 }
 
-#CreatingForm input{
+#CreatingForm input, #CreatingTaskForm input{
 	width: 50%;
 	height: 10px;
 	margin: 5px;
 }
 
-#CreatingForm #Exit{
+#CreatingForm #Exit, #CreatingTaskForm #Exit{
 	height: 20px;
 	width: 20px;
 	padding: 1px;
@@ -47,7 +47,7 @@ body{
 	transform: translateX(-50%);
 }
 
-#CreatingForm #submit{
+#CreatingForm #submit, #CreatingTaskForm #submit{
 	display: block;
 }
 
@@ -113,4 +113,8 @@ h3, h4{
 a{
 	text-decoration: none;
 	color: black;
+}
+
+textarea{
+	resize: none;
 }

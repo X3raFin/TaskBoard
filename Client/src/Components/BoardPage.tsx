@@ -17,6 +17,8 @@ function BoardPage() {
   const [status, setStatus] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const [cols, setCols] = useState<ColumnsStuff>({});
+  const [creatingNewTask, setCreatingNewTask] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
 
   const url = "http://localhost:5112/api/TaskBoard/columns/";
 
@@ -53,8 +55,31 @@ function BoardPage() {
     }
   };
 
+  const creatingTaskFormHandler = async (columnId: number) => {
+    try {
+      const response = await fetch("http://localhost:5112/api/TaskBoard/task", {
+        method: "POST",
+        headers: {
+          "Contnent-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    } finally {
+      setCreatingNewTask(false);
+      setNewColumnName("");
+    }
+  };
+
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewColumnName(event.target.value);
+  };
+
+  const changeDescriptionValue = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDescription(event.target.value);
   };
 
   useEffect(() => {
@@ -75,6 +100,9 @@ function BoardPage() {
                 </div>
               );
             })}
+            <button onClick={() => setCreatingNewTask(!creatingNewTask)}>
+              +
+            </button>
           </div>
         );
       })}
