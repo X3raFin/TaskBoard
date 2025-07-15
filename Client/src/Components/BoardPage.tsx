@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../App.css";
+import Card from "./Card";
 
-interface ToDos {
+export interface ToDos {
   id: number;
   columnId: number;
   name: string;
@@ -10,7 +11,7 @@ interface ToDos {
   order: number;
 }
 
-type ColumnsStuff = Record<string, ToDos[]>;
+export type ColumnsStuff = Record<string, ToDos[]>;
 
 function BoardPage() {
   const params = useParams();
@@ -87,45 +88,16 @@ function BoardPage() {
   }, []);
 
   return (
-    <div id="Columns">
-      {Object.keys(cols).map((columnName) => {
-        return (
-          <div className="Column" key={columnName}>
-            <h3>{columnName}</h3>
-            {cols[columnName].map((t) => {
-              return (
-                <div key={t.id} className="Task">
-                  <h4>{t.name}</h4>
-                  <p>{t.descriptions}</p>
-                </div>
-              );
-            })}
-            <button onClick={() => setCreatingNewTask(!creatingNewTask)}>
-              +
-            </button>
-          </div>
-        );
-      })}
-      <button onClick={() => setStatus(!status)}>+</button>
-      <div
-        id="CreatingForm"
-        style={{ display: status === false ? "none" : "flex" }}
-      >
-        <button id="Exit" onClick={() => setStatus(false)}>
-          X
-        </button>
-        Nazwa nowej kolumny:
-        <input
-          type="text"
-          id="Nazwa"
-          value={newColumnName}
-          onChange={changeNameValue}
-        />
-        <button id="submit" onClick={() => creatingFormHandler()}>
-          Stwórz
-        </button>
-      </div>
-    </div>
+    <Card
+      cols={cols}
+      status={status}
+      creatingNewTask={creatingNewTask}
+      setCreatingNewTask={setCreatingNewTask}
+      newColumnName={newColumnName}
+      setStatus={setStatus}
+      changeNameValue={changeNameValue}
+      creatingFormHandler={creatingFormHandler}
+    />
   );
 }
 
