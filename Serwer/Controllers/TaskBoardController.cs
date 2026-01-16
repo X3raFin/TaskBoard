@@ -1,10 +1,7 @@
-using TaskBoard.Serwer.Models;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections;
-using Microsoft.VisualBasic;
-using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using TaskBoard.Serwer.Data;
+using TaskBoard.Serwer.Models;
 
 namespace Serwer.Controllers
 {
@@ -12,179 +9,185 @@ namespace Serwer.Controllers
 	[ApiController]
 	public class TaskBoardController : ControllerBase
 	{
+		private readonly AppDbContext _context;
 
-		[HttpGet]
-		public List<NewBoardDto> GetBoards()
+		public TaskBoardController(AppDbContext context)
 		{
-			var answer = InMemoryDataStore.Boards.Select(board => new NewBoardDto
-			{
-				Id = board.Id,
-				Name = board.Name,
-				ColsNumber = InMemoryDataStore.Columns.Count(col => col.BoardId == board.Id),
-			}).ToList();
-			return answer;
+			_context = context;
 		}
 
-		[HttpGet("/columns")]
-		public List<Column> GetColumns()
+		[HttpGet]
+		public async Task<IActionResult> GetBoards()
 		{
-			return InMemoryDataStore.Columns;
+			var boards = await _context.Boards.ToListAsync();
+			return Ok(boards);
 		}
 
 		[HttpGet("columns/{BoardId}")]
-		public IActionResult GetColumns(int BoardId)
+		public async Task<IActionResult> GetColumns(int BoardId)
 		{
-			var columns = InMemoryDataStore.Columns.Where(col => col.BoardId == BoardId).OrderBy(col => col.Order).ToList();
-			var response = columns.Select(c => new
-			{
-				Id = c.Id,
-				Name = c.Name,
-				Tasks = InMemoryDataStore.ToDos.Where(t => t.ColumnId == c.Id).OrderBy(t => t.Order).ToList()
-			}).ToList();
+			var columns = await _context.Columns.Where(c => c.BoardId == BoardId).OrderBy(c => c.Order).Include(c => c.Tasks.OrderBy(t => t.Order)).ToListAsync();
 
-			return Ok(response);
+			return Ok(columns);
 		}
 
 		[HttpPost]
-		public IActionResult CreateBoard([FromBody] CreateDto dto)
+		public async Task<IActionResult> CreateBoard([FromBody] CreateDto dto)
 		{
-			var LastBoard = InMemoryDataStore.Boards.LastOrDefault();
-			if (dto is not null && LastBoard is not null)
-			{
-				InMemoryDataStore.Boards.Add(new Board { Id = LastBoard.Id + 1, Name = dto.Name });
-				return StatusCode(201, "Nowa tablica została dodana pomyślnie.");
-			}
+			var exist = await _context.Boards.AnyAsync(b => b.Name == dto.Name);
 
-			return BadRequest("Coś poszło nie tak.");
+			if (exist) return Conflict("Tablica o takiej nazwie juz istnieje.");
+
+			var board = new Board
+			{
+				Name = dto.Name
+			};
+
+			await _context.Boards.AddAsync(board);
+
+			await _context.SaveChangesAsync();
+
+			return Ok(board);
 		}
 
-
-
 		[HttpPost("columns/{BoardId}")]
-		public IActionResult CreateColumn(int BoardId, [FromBody] CreateDto dto)
+		public async Task<IActionResult> CreateColumn(int BoardId, [FromBody] CreateDto dto)
 		{
-			var LastColumn = InMemoryDataStore.Columns.LastOrDefault();
-			if (dto is not null && LastColumn is not null)
-			{
-				InMemoryDataStore.Columns.Add(new Column { Id = LastColumn.Id + 1, BoardId = BoardId, Name = dto.Name, TasksNumber = 0, Order = LastColumn.Order + 1 });
-				return StatusCode(201, "Nowa kolumna została pomyślnie dodana.");
-			}
+			var exist = await _context.Columns.AnyAsync(c => c.Name == dto.Name && c.BoardId == BoardId);
 
-			return BadRequest("Coś poszło nie tak.");
+			if (exist) return Conflict("Kolumna o podanej nazwie juz istnieje.");
+
+			var newColumnOrder = (await _context.Columns.Where(c => c.BoardId == BoardId).MaxAsync(c => (int?)c.Order) ?? 0) + 1;
+
+			var column = new Column
+			{
+				BoardId = BoardId,
+				Name = dto.Name,
+				Order = newColumnOrder,
+			};
+			await _context.Columns.AddAsync(column);
+
+			await _context.SaveChangesAsync();
+
+			return Ok(column);
 		}
 
 		[HttpPost("task")]
-		public IActionResult CreateToDo([FromBody] NewTaskDto dto)
+		public async Task<IActionResult> CreateToDo([FromBody] NewTaskDto dto)
 		{
-			var LastTask = InMemoryDataStore.ToDos.LastOrDefault();
-			var HighestOrderExist = InMemoryDataStore.ToDos.Where(t => t.ColumnId == dto.Id).Max(t => t.Order);
-			if (dto.Id != 0 && dto.Name is not null && LastTask is not null)
-			{
-				InMemoryDataStore.ToDos.Add(new ToDo { Id = LastTask.Id + 1, ColumnId = dto.Id, Name = dto.Name, Descriptions = dto.Descriptions, Order = HighestOrderExist + 1 });
-				return StatusCode(201, "Nowe zadanie zostało pomyślnie dodane");
-			}
+			var exist = await _context.ToDos.AnyAsync(t => t.Name == dto.Name && t.ColumnId == dto.Id);
+			if (exist) return Conflict("Zadanie o takiej nazwie juz istnieje.");
 
-			return BadRequest("Coś poszło nie tak.");
+			var newTaskOrder = (await _context.ToDos.Where(t => t.ColumnId == dto.Id).MaxAsync(t => (int?)t.Order) ?? 0) + 1;
+
+			var task = new ToDo
+			{
+				ColumnId = dto.Id,
+				Name = dto.Name,
+				Descriptions = dto.Descriptions,
+				Order = newTaskOrder
+			};
+
+			await _context.ToDos.AddAsync(task);
+			await _context.SaveChangesAsync();
+			return Ok(task);
 		}
 
 		[HttpDelete("columns/deleteTask/{taskId}")]
-		public IActionResult DeleteTask(int taskId)
+		public async Task<IActionResult> DeleteTask(int taskId)
 		{
-			var TaskToRemove = InMemoryDataStore.ToDos.FirstOrDefault(t => t.Id == taskId);
+			var task = await _context.ToDos.FindAsync(taskId);
+			if (task == null) return NotFound("Nie ma takiego zadania.");
 
-			if (TaskToRemove == null) return StatusCode(404, "Coś poszło nie tak. Nie znaleziono takiego zadania.");
+			_context.ToDos.Remove(task);
+			await _context.SaveChangesAsync();
 
-			InMemoryDataStore.ToDos.Remove(TaskToRemove);
-			return StatusCode(200, "Zadanie zostało usunięte.");
+			return Ok();
 		}
 
 		[HttpDelete("columns/deleteColumn/{columnId}")]
-		public IActionResult DeleteColumn(int columnId)
+		public async Task<IActionResult> DeleteColumn(int columnId)
 		{
-			var ColumnToDelete = InMemoryDataStore.Columns.FirstOrDefault(c => c.Id == columnId);
-			if (ColumnToDelete == null) return StatusCode(404, "Coś poszło nie tak nie znalazłem takiej kolumny.");
+			var column = await _context.Columns.FindAsync(columnId);
+			if (column == null) return NotFound("Nie ma takiej kolumny.");
 
-			InMemoryDataStore.ToDos.RemoveAll(t => t.ColumnId == columnId);
+			_context.Columns.Remove(column);
+			await _context.SaveChangesAsync();
 
-			InMemoryDataStore.Columns.Remove(ColumnToDelete);
-
-			return StatusCode(200, "Kolumna została usunięta z całą jej zawartością.");
+			return Ok();
 		}
 
 		[HttpDelete("deleteBoard/{boardId}")]
-		public IActionResult DeleteBoard(int boardId)
+		public async Task<IActionResult> DeleteBoard(int boardId)
 		{
-			var BoardToDelete = InMemoryDataStore.Boards.FirstOrDefault(b => b.Id == boardId);
-			if (BoardToDelete == null) return StatusCode(404, "Coś poszło nie tak. Nie znalazłem takiej tablicy.");
+			var board = await _context.Boards.FindAsync(boardId);
+			if (board == null) return NotFound("Nie ma takiej tablicy.");
 
-			var IdsColumnsToDelete = InMemoryDataStore.Columns.Where(c => c.BoardId == boardId).Select(c => c.Id).ToList();
+			_context.Boards.Remove(board);
+			await _context.SaveChangesAsync();
 
-			foreach (int IdColumn in IdsColumnsToDelete)
-				InMemoryDataStore.ToDos.RemoveAll(t => t.ColumnId == IdColumn);
-
-			InMemoryDataStore.Columns.RemoveAll(c => c.BoardId == boardId);
-
-			InMemoryDataStore.Boards.Remove(BoardToDelete);
-
-			return StatusCode(200, "Pomyślnie usunięto tablice");
+			return Ok();
 		}
 
 		[HttpPatch("columns/patchTaskName/{taskId}")]
-		public IActionResult ChangeTaskName(int taskId, [FromBody] string newName)
+		public async Task<IActionResult> ChangeTaskName(int taskId, [FromBody] string newName)
 		{
-			var TaskToChange = InMemoryDataStore.ToDos.FirstOrDefault(t => t.Id == taskId);
-			if (TaskToChange == null) return StatusCode(404, "Cos poszlo nie tak. Nie znalazlem takiego zadania");
+			var task = await _context.ToDos.FindAsync(taskId);
+			if (task == null) return NotFound("Nie znaleziono takiego zadania.");
 
-			TaskToChange.Name = newName;
+			task.Name = newName;
 
-			return StatusCode(200, "Pomyslnie zmienilem nazwe zadania.");
+			await _context.SaveChangesAsync();
+			return Ok();
 		}
 
 		[HttpPatch("columns/patchTaskStatus/{taskId}")]
-		public IActionResult ChangeTaskStatus(int taskId)
+		public async Task<IActionResult> ChangeTaskStatus(int taskId)
 		{
-			var TaskToChange = InMemoryDataStore.ToDos.FirstOrDefault(t => t.Id == taskId);
-			if (TaskToChange == null) return StatusCode(404, "Cos poszlo nie tak. Nie znalazlem takiego zadania");
+			var task = await _context.ToDos.FindAsync(taskId);
+			if (task == null) return NotFound("Nie znaleziono takiego zadania.");
 
-			TaskToChange.isDone = !(TaskToChange.isDone);
+			task.isDone = !task.isDone;
 
-			return StatusCode(200, "Pomyslnie zmienilem status zadania.");
+			await _context.SaveChangesAsync();
+			return Ok();
 		}
 
 		[HttpPatch("columns/patchTaskDescription/{taskId}")]
-		public IActionResult ChangeTaskDescription(int taskId, [FromBody] string newDescription)
+		public async Task<IActionResult> ChangeTaskDescription(int taskId, [FromBody] string newDescription)
 		{
-			var TaskToChange = InMemoryDataStore.ToDos.FirstOrDefault(t => t.Id == taskId);
-			if (TaskToChange == null) return StatusCode(404, "Cos poszlo nie tak. Nie znalazlem takiego zadania");
+			var task = await _context.ToDos.FindAsync(taskId);
+			if (task == null) return NotFound("Nie znaleziono takiego zadania.");
 
-			TaskToChange.Descriptions = newDescription;
+			task.Descriptions = newDescription;
 
-			return StatusCode(200, "Pomyslnie zmienilem opis zadania.");
+			await _context.SaveChangesAsync();
+			return Ok();
 		}
 
 		[HttpPatch("columns/patchColumnName/{columnId}")]
-		public IActionResult ChangeColumnName(int columnId, [FromBody] string newName)
+		public async Task<IActionResult> ChangeColumnName(int columnId, [FromBody] string newName)
 		{
-			var ColumnToChange = InMemoryDataStore.Columns.FirstOrDefault(c => c.Id == columnId);
-			if (ColumnToChange == null) return StatusCode(404, "Cos poszlo nie tak. Nie znalazlem takiej kolumy");
+			var column = await _context.Columns.FindAsync(columnId);
+			if (column == null) return NotFound("Nie znaleziono takiej kolumny.");
 
-			ColumnToChange.Name = newName;
+			column.Name = newName;
 
-			return StatusCode(200, "Pomyslnie zmienilem nazwe kolumny.");
+			await _context.SaveChangesAsync();
+			return Ok();
 		}
 
 		[HttpPatch("columns/patchBoardName/{boardId}")]
-		public IActionResult ChangeBoardName(int boardId, [FromBody] string newName)
+		public async Task<IActionResult> ChangeBoardName(int boardId, [FromBody] string newName)
 		{
-			var BoardToChange = InMemoryDataStore.Boards.FirstOrDefault(b => b.Id == boardId);
-			if (BoardToChange == null) return StatusCode(404, "Cos poszlo nie tak. Nie znalazlem takiej tablicy");
+			var board = await _context.Boards.FindAsync(boardId);
+			if (board == null) return NotFound("Nie znaleziono takiej tablicy.");
 
-			BoardToChange.Name = newName;
+			board.Name = newName;
 
-			return StatusCode(200, "Pomyslnie zmienilem nazwe tablicy.");
+			await _context.SaveChangesAsync();
+			return Ok();
 		}
-
-
 	}
 
 	public class CreateDto

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace TaskBoard.Serwer.Models
 {
 	public class ToDo
@@ -8,5 +10,8 @@ namespace TaskBoard.Serwer.Models
 		public string? Descriptions { get; set; }
 		public int Order { get; set; }
 		public bool isDone { get; set; } = false;
+
+		[JsonIgnore]
+		public Column? Column { get; set; }
 	}
 }
