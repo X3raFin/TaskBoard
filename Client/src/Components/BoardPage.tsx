@@ -9,11 +9,12 @@ export interface ToDos {
   name: string;
   descriptions: string;
   order: number;
+  isDone: boolean;
 }
 
 export interface ColumnStuff {
   name: string;
-  id: string;
+  id: number;
   tasks: ToDos[];
 }
 
@@ -22,7 +23,6 @@ function BoardPage() {
   const [status, setStatus] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const [cols, setCols] = useState<ColumnStuff[]>([]);
-  const [description, setDescription] = useState<string>("");
 
   const url = "http://localhost:5112/api/TaskBoard/columns/";
 
@@ -79,18 +79,95 @@ function BoardPage() {
       if (response.ok) fetchData();
     } catch (error) {
       return console.error(`Coś poszło nie tak: ` + error);
-    } finally {
+    }
+  };
+
+  const toggleTaskStatus = async (id: number) => {
+    try {
+      const response = await fetch(url + "patchTaskStatus/" + id, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    }
+  };
+
+  const updateColumnName = async (id: number, name: string) => {
+    try {
+      const response = await fetch(url + "patchColumnName/" + id, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(name),
+      });
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    }
+  };
+
+  const updateTaskName = async (id: number, name: string) => {
+    try {
+      const response = await fetch(url + "patchTaskName/" + id, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(name),
+      });
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    }
+  };
+
+  const updateTaskDescription = async (id: number, desc: string) => {
+    try {
+      const response = await fetch(url + "patchTaskDescription/" + id, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(desc),
+      });
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    }
+  };
+
+  const deleteColumn = async (id: number) => {
+    try {
+      const response = await fetch(url + "deleteColumn/" + id, {
+        method: "DELETE",
+      });
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
+    }
+  };
+
+  const deleteTask = async (id: number) => {
+    try {
+      const response = await fetch(
+        url+ "deleteTask/" + id,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.ok) fetchData();
+    } catch (error) {
+      return console.error(`Coś poszło nie tak: ` + error);
     }
   };
 
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewColumnName(event.target.value);
-  };
-
-  const changeDescriptionValue = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setDescription(event.target.value);
   };
 
   useEffect(() => {
@@ -106,6 +183,12 @@ function BoardPage() {
       changeNameValue={changeNameValue}
       creatingFormHandler={creatingFormHandler}
       creatingTaskFormHandler={creatingTaskFormHandler}
+      updateColumnName={updateColumnName}
+      updateTaskName={updateTaskName}
+      updateTaskDescription={updateTaskDescription}
+      toggleTaskStatus={toggleTaskStatus}
+      deleteColumn={deleteColumn}
+      deleteTask={deleteTask}
     />
   );
 }

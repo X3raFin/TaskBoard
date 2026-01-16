@@ -13,6 +13,12 @@ interface CardProps {
   setStatus: (value: boolean) => void;
   changeNameValue: (value: React.ChangeEvent<HTMLInputElement>) => void;
   creatingFormHandler: () => void;
+  updateColumnName: (id: number, name: string) => void;
+  updateTaskName: (id: number, name: string) => void;
+  updateTaskDescription: (id: number, desc: string) => void;
+  toggleTaskStatus: (id: number) => void;
+  deleteColumn: (id: number) => void;
+  deleteTask: (id: number) => void;
 }
 
 function Card(card: CardProps) {
@@ -26,6 +32,12 @@ function Card(card: CardProps) {
             tasks={col.tasks}
             columnName={col.name}
             creatingTaskFormHandler={card.creatingTaskFormHandler}
+            updateColumnName={card.updateColumnName}
+            updateTaskName={card.updateTaskName}
+            updateTaskDescription={card.updateTaskDescription}
+            toggleTaskStatus={card.toggleTaskStatus}
+            deleteColumn={card.deleteColumn}
+            deleteTask={card.deleteTask}
           />
         );
       })}

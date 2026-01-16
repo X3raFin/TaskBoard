@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
-import { Link } from "react-router-dom";
+import { BoardCard } from "./BoardCard";
 
 interface Board {
   id: number;
@@ -44,6 +44,38 @@ function Dashboard() {
     }
   };
 
+  const updateBoardNameHandler = async (boardId: number, newName: string) => {
+    try {
+      const response = await fetch(
+        `${apiUrl}/columns/patchBoardName/${boardId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newName),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Błąd edycji");
+        return;
+      }
+      fetchedData();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteBoardHandler = async (boardId: number) => {
+    try {
+      const response = await fetch(apiUrl + "deleteBoard" + boardId, {
+        method: "DELETE",
+      });
+      if (response.ok) fetchedData();
+    } catch (error) {
+      return console.error("Błąd usuwania: " + error);
+    }
+  };
+
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewBoardName(event.target.value);
   };
@@ -55,14 +87,12 @@ function Dashboard() {
   return (
     <div className="p-8 min-h-screen flex flex-wrap gap-6 items-start content-start">
       {boards.map((board) => (
-        <Link to={"/column/" + board.id} key={board.id}>
-          <div className="card w-72 h-32 bg-base-100 shadow-xl hover:scale-105 transition-transform cursor-pointer border border-base-content/10">
-            <div className="card-body p-5">
-              <h3 className="card-title text-primary">{board.name}</h3>
-              <p className="text-sm opacity-70">Kolumn: {board.colsNumber}</p>
-            </div>
-          </div>
-        </Link>
+        <BoardCard
+          key={board.id}
+          board={board}
+          onUpdateName={updateBoardNameHandler}
+          onDelete={deleteBoardHandler}
+        />
       ))}
 
       <button
