@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
 import { BoardCard } from "./BoardCard";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Board {
   id: number;
@@ -12,35 +13,45 @@ function Dashboard() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [status, setStatus] = useState<boolean>(false);
   const [newBoardName, setNewBoardName] = useState<string>("");
+  const [validationError, setValidationError] = useState<boolean>(false);
 
   const apiUrl = "http://localhost:5112/api/TaskBoard";
 
   const fetchedData = async () => {
     try {
       const response = await fetch(apiUrl);
-      if (!response.ok) return console.error("Błąd pobierania");
+      if (!response.ok) throw new Error("Błąd pobierania");
       const json = await response.json();
       setBoards(json);
     } catch (error) {
-      return console.error("Błąd: " + error);
+      toast.error("Nie udało się pobrać tablic.");
     }
   };
 
   const creatingFormHandler = async () => {
-    if (!newBoardName) return;
+    if (!newBoardName.trim()) {
+      setValidationError(true);
+      toast.error("Nazwa nie może być pusta!");
+      return;
+    }
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Name: newBoardName }),
       });
-      if (!response.ok) return console.error("Błąd zapisu");
+
+      if (!response.ok) throw new Error("Błąd zapisu");
+
       fetchedData();
-    } catch (error) {
-      return console.error("Błąd: " + error);
-    } finally {
+      toast.success("Dodano nową tablicę!");
+
       setNewBoardName("");
       setStatus(false);
+      setValidationError(false);
+    } catch (error) {
+      toast.error("Wystąpił błąd podczas tworzenia.");
     }
   };
 
@@ -55,29 +66,32 @@ function Dashboard() {
         }
       );
 
-      if (!response.ok) {
-        console.error("Błąd edycji");
-        return;
-      }
+      if (!response.ok) throw new Error("Błąd edycji");
       fetchedData();
     } catch (error) {
-      console.error(error);
+      toast.error("Nie udało się zmienić nazwy.");
     }
   };
 
   const deleteBoardHandler = async (boardId: number) => {
     try {
-      const response = await fetch(apiUrl + "deleteBoard" + boardId, {
+      const response = await fetch(`${apiUrl}/deleteBoard/${boardId}`, {
         method: "DELETE",
       });
-      if (response.ok) fetchedData();
+      if (response.ok) {
+        fetchedData();
+        toast.success("Tablica usunięta.");
+      } else {
+        throw new Error("Błąd usuwania");
+      }
     } catch (error) {
-      return console.error("Błąd usuwania: " + error);
+      toast.error("Nie udało się usunąć tablicy.");
     }
   };
 
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewBoardName(event.target.value);
+    if (validationError) setValidationError(false);
   };
 
   useEffect(() => {
@@ -86,6 +100,8 @@ function Dashboard() {
 
   return (
     <div className="p-8 min-h-screen flex flex-wrap gap-6 items-start content-start">
+      <Toaster position="top-center" reverseOrder={false} />
+
       {boards.map((board) => (
         <BoardCard
           key={board.id}
@@ -107,7 +123,10 @@ function Dashboard() {
           <div className="md:w-100 md:h-50 md:p-5 bg-base-100 shadow-lg shadow-primary relative">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => setStatus(false)}
+              onClick={() => {
+                setStatus(false);
+                setValidationError(false);
+              }}
             >
               ✕
             </button>
@@ -121,11 +140,21 @@ function Dashboard() {
               <input
                 type="text"
                 placeholder="Np. Projekt X"
-                className="input input-bordered w-full"
+                className={`input input-bordered w-full ${
+                  validationError ? "input-error" : ""
+                }`}
                 value={newBoardName}
                 onChange={changeNameValue}
                 autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") creatingFormHandler();
+                }}
               />
+              {validationError && (
+                <span className="text-error text-sm mt-1">
+                  Nazwa jest wymagana!
+                </span>
+              )}
             </div>
 
             <div className="modal-action">

@@ -5,6 +5,7 @@ interface CardProps {
   cols: ColumnStuff[];
   status: boolean;
   newColumnName: string;
+  validationError: boolean;
   creatingTaskFormHandler: (
     columnId: number,
     name: string,
@@ -56,7 +57,15 @@ function Card(card: CardProps) {
           <div className="bg-base-100 p-6 rounded-2xl shadow-2xl w-11/12 md:w-96 relative border border-base-content/10 zoom-in-95">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => card.setStatus(false)}
+              onClick={() => {
+                card.setStatus(false);
+                if (card.validationError && card.changeNameValue) {
+                  const event = {
+                    target: { value: "" },
+                  } as React.ChangeEvent<HTMLInputElement>;
+                  card.changeNameValue(event);
+                }
+              }}
             >
               ✕
             </button>
@@ -72,7 +81,9 @@ function Card(card: CardProps) {
               <input
                 type="text"
                 placeholder="Np. Testy"
-                className="input input-bordered w-full focus:input-primary"
+                className={`input input-bordered w-full focus:input-primary ${
+                  card.validationError ? "input-error" : ""
+                }`}
                 value={card.newColumnName}
                 onChange={card.changeNameValue}
                 autoFocus
@@ -81,6 +92,11 @@ function Card(card: CardProps) {
                   if (e.key === "Escape") card.setStatus(false);
                 }}
               />
+              {card.validationError && (
+                <span className="text-error text-sm mt-1">
+                  Nazwa jest wymagana!
+                </span>
+              )}
             </div>
 
             <div className="mt-6 flex justify-end gap-2">

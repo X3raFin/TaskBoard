@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../App.css";
 import Card from "./Card";
+import toast, { Toaster } from "react-hot-toast";
 
 export interface ToDos {
   id: number;
@@ -23,23 +24,28 @@ function BoardPage() {
   const [status, setStatus] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const [cols, setCols] = useState<ColumnStuff[]>([]);
+  const [validationError, setValidationError] = useState<boolean>(false);
 
   const url = "http://localhost:5112/api/TaskBoard/columns/";
 
   const fetchData = async () => {
     try {
       const response = await fetch(url + params.BoardId);
-      if (!response.ok) {
-        console.error("Operacja nie dostała kodu 200.");
-      }
+      if (!response.ok) throw new Error("Operacja nie dostała kodu 200.");
       const json: ColumnStuff[] = await response.json();
       setCols(json);
     } catch (error) {
-      console.error("Wystąpił problem: " + error);
+      toast.error("Nie udało się pobrać kolumn.");
     }
   };
 
   const creatingFormHandler = async () => {
+    if (!newColumnName.trim()) {
+      setValidationError(true);
+      toast.error("Nazwa kolumny nie może być pusta!");
+      return;
+    }
+
     try {
       const response = await fetch(url + params.BoardId, {
         method: "POST",
@@ -48,14 +54,15 @@ function BoardPage() {
         },
         body: JSON.stringify({ Name: newColumnName }),
       });
-      if (!response.ok) {
-        return console.error("Prośba nie została zakończona kodem 200.");
-      } else fetchData();
-    } catch (error) {
-      console.error("Wystąpił problem: " + error);
-    } finally {
-      setStatus(false);
+      if (!response.ok) throw new Error("Błąd zapisu");
+
+      fetchData();
+      toast.success("Dodano nową kolumnę!");
       setNewColumnName("");
+      setStatus(false);
+      setValidationError(false);
+    } catch (error) {
+      toast.error("Wystąpił problem podczas tworzenia kolumny.");
     }
   };
 
@@ -64,6 +71,11 @@ function BoardPage() {
     name: string,
     descriptions: string
   ) => {
+    if (!name.trim()) {
+      toast.error("Nazwa zadania jest wymagana!");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5112/api/TaskBoard/task", {
         method: "POST",
@@ -76,9 +88,14 @@ function BoardPage() {
           descriptions: descriptions,
         }),
       });
-      if (response.ok) fetchData();
+      if (response.ok) {
+        fetchData();
+        toast.success("Dodano nowe zadanie!");
+      } else {
+        throw new Error("Błąd zapisu zadania");
+      }
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Nie udało się dodać zadania.");
     }
   };
 
@@ -92,7 +109,7 @@ function BoardPage() {
       });
       if (response.ok) fetchData();
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Nie udało się zmienić statusu.");
     }
   };
 
@@ -106,8 +123,9 @@ function BoardPage() {
         body: JSON.stringify(name),
       });
       if (response.ok) fetchData();
+      else toast.error("Błąd zmiany nazwy kolumny");
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Nie udało się zmienić nazwy kolumny.");
     }
   };
 
@@ -122,7 +140,7 @@ function BoardPage() {
       });
       if (response.ok) fetchData();
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Nie udało się zmienić nazwy zadania.");
     }
   };
 
@@ -137,7 +155,7 @@ function BoardPage() {
       });
       if (response.ok) fetchData();
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Nie udało się zmienić opisu.");
     }
   };
 
@@ -146,28 +164,36 @@ function BoardPage() {
       const response = await fetch(url + "deleteColumn/" + id, {
         method: "DELETE",
       });
-      if (response.ok) fetchData();
+      if (response.ok) {
+        fetchData();
+        toast.success("Kolumna usunięta.");
+      } else {
+        toast.error("Nie udało się usunąć kolumny.");
+      }
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Wystąpił błąd podczas usuwania.");
     }
   };
 
   const deleteTask = async (id: number) => {
     try {
-      const response = await fetch(
-        url+ "deleteTask/" + id,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) fetchData();
+      const response = await fetch(url + "deleteTask/" + id, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        fetchData();
+        toast.success("Zadanie usunięte.");
+      } else {
+        toast.error("Nie udało się usunąć zadania.");
+      }
     } catch (error) {
-      return console.error(`Coś poszło nie tak: ` + error);
+      toast.error("Wystąpił błąd podczas usuwania.");
     }
   };
 
   const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewColumnName(event.target.value);
+    if (validationError) setValidationError(false);
   };
 
   useEffect(() => {
@@ -175,21 +201,25 @@ function BoardPage() {
   }, []);
 
   return (
-    <Card
-      cols={cols}
-      status={status}
-      newColumnName={newColumnName}
-      setStatus={setStatus}
-      changeNameValue={changeNameValue}
-      creatingFormHandler={creatingFormHandler}
-      creatingTaskFormHandler={creatingTaskFormHandler}
-      updateColumnName={updateColumnName}
-      updateTaskName={updateTaskName}
-      updateTaskDescription={updateTaskDescription}
-      toggleTaskStatus={toggleTaskStatus}
-      deleteColumn={deleteColumn}
-      deleteTask={deleteTask}
-    />
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Card
+        cols={cols}
+        status={status}
+        newColumnName={newColumnName}
+        setStatus={setStatus}
+        changeNameValue={changeNameValue}
+        creatingFormHandler={creatingFormHandler}
+        creatingTaskFormHandler={creatingTaskFormHandler}
+        updateColumnName={updateColumnName}
+        updateTaskName={updateTaskName}
+        updateTaskDescription={updateTaskDescription}
+        toggleTaskStatus={toggleTaskStatus}
+        deleteColumn={deleteColumn}
+        deleteTask={deleteTask}
+        validationError={validationError}
+      />
+    </>
   );
 }
 
