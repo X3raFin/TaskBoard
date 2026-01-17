@@ -11,9 +11,9 @@ interface Board {
 }
 
 export interface User {
-  Id: number;
-  Email: string;
-  Login: string;
+  id: number;
+  email: string;
+  login: string;
 }
 
 function Dashboard() {
@@ -25,9 +25,13 @@ function Dashboard() {
 
   const apiUrl = "http://localhost:5112/api/TaskBoard";
 
-  const fetchedData = async () => {
+  const fetchedData = async (userIdOverride?: number) => {
+    const currentId = userIdOverride || user?.id;
+
+    if (!currentId) return;
+
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl + "/user/" + currentId);
       if (!response.ok) throw new Error("Błąd pobierania");
       const json = await response.json();
       setBoards(json);
@@ -42,16 +46,19 @@ function Dashboard() {
       toast.error("Nazwa nie może być pusta!");
       return;
     }
+
+    if (!user?.id) return;
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Name: newBoardName }),
+        body: JSON.stringify({ Name: newBoardName, UserId: user.id }),
       });
 
       if (!response.ok) throw new Error("Błąd zapisu");
 
-      fetchedData();
+      fetchedData(user.id);
       toast.success("Dodano nową tablicę!");
 
       setNewBoardName("");
@@ -132,8 +139,13 @@ function Dashboard() {
       }
 
       const userData = await response.json();
+
+      localStorage.setItem("taskboard_user", JSON.stringify(userData));
       setUser(userData);
+      fetchedData(userData.id);
+
       toast.success("Zalogowano!");
+      window.location.reload();
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -159,7 +171,12 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchedData();
+    const storedUser = localStorage.getItem("taskboard_user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      fetchedData(parsedUser.id);
+    }
   }, []);
 
   if (!user) {
