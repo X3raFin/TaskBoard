@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
+import { LoginPage } from "./LoginPage";
 import { BoardCard } from "./BoardCard";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -9,11 +10,18 @@ interface Board {
   colsNumber: number;
 }
 
+export interface User {
+  Id: number;
+  Email: string;
+  Login: string;
+}
+
 function Dashboard() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [status, setStatus] = useState<boolean>(false);
   const [newBoardName, setNewBoardName] = useState<string>("");
   const [validationError, setValidationError] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const apiUrl = "http://localhost:5112/api/TaskBoard";
 
@@ -34,7 +42,6 @@ function Dashboard() {
       toast.error("Nazwa nie może być pusta!");
       return;
     }
-
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -63,7 +70,7 @@ function Dashboard() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newName),
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Błąd edycji");
@@ -94,9 +101,70 @@ function Dashboard() {
     if (validationError) setValidationError(false);
   };
 
+  const parseError = async (response: Response) => {
+    try {
+      const text = await response.text();
+      try {
+        const json = JSON.parse(text);
+        if (json.errors) {
+          return Object.values(json.errors).flat().join("\n");
+        }
+        return json.title || text;
+      } catch {
+        return text;
+      }
+    } catch {
+      return "Wystąpił nieznany błąd";
+    }
+  };
+
+  const handleLogin = async (email: string, pass: string) => {
+    try {
+      const response = await fetch("http://localhost:5112/api/Auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Email: email, Password: pass }),
+      });
+
+      if (!response.ok) {
+        const errorMsg = await parseError(response);
+        throw new Error(errorMsg);
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+      toast.success("Zalogowano!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleRegister = async (login: string, email: string, pass: string) => {
+    try {
+      const response = await fetch("http://localhost:5112/api/Auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Login: login, Email: email, Password: pass }),
+      });
+
+      if (!response.ok) {
+        const errorMsg = await parseError(response);
+        throw new Error(errorMsg);
+      }
+
+      toast.success("Konto utworzone! Zaloguj się.");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchedData();
   }, []);
+
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} onRegister={handleRegister} />;
+  }
 
   return (
     <div className="p-8 min-h-screen flex flex-wrap gap-6 items-start content-start">
