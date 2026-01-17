@@ -17,17 +17,23 @@ namespace TaskBoard.Serwer.Controllers
 			_context = context;
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> GetBoards()
+		[HttpGet("user/{userId}")]
+		public async Task<IActionResult> GetBoards(int userId)
 		{
-			var boards = await _context.Boards.ToListAsync();
+			var boards = await _context.Boards
+				.Where(b => b.UserId == userId)
+				.ToListAsync();
 			return Ok(boards);
 		}
 
 		[HttpGet("columns/{BoardId}")]
 		public async Task<IActionResult> GetColumns(int BoardId)
 		{
-			var columns = await _context.Columns.Where(c => c.BoardId == BoardId).OrderBy(c => c.Order).Include(c => c.Tasks.OrderBy(t => t.Order)).ToListAsync();
+			var columns = await _context.Columns
+				.Where(c => c.BoardId == BoardId)
+				.OrderBy(c => c.Order)
+				.Include(c => c.Tasks.OrderBy(t => t.Order))
+				.ToListAsync();
 
 			return Ok(columns);
 		}
@@ -35,13 +41,14 @@ namespace TaskBoard.Serwer.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateBoard([FromBody] CreateDto dto)
 		{
-			var exist = await _context.Boards.AnyAsync(b => b.Name == dto.Name);
+			var exist = await _context.Boards.AnyAsync(b => b.Name == dto.Name && b.UserId == dto.UserId);
 
 			if (exist) return Conflict("Tablica o takiej nazwie juz istnieje.");
 
 			var board = new Board
 			{
-				Name = dto.Name
+				Name = dto.Name,
+				UserId = dto.UserId
 			};
 
 			await _context.Boards.AddAsync(board);
