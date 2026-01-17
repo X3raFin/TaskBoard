@@ -10,5 +10,6 @@ namespace TaskBoard.Serwer.Data
 		public DbSet<Board> Boards { get; set; }
 		public DbSet<Column> Columns { get; set; }
 		public DbSet<ToDo> ToDos { get; set; }
+		public DbSet<User> Users { get; set; }
 	}
 }

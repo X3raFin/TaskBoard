@@ -28,7 +28,12 @@ namespace Serwer.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Boards");
                 });
@@ -86,6 +91,41 @@ namespace Serwer.Migrations
                     b.ToTable("ToDos");
                 });
 
+            modelBuilder.Entity("TaskBoard.Serwer.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("TaskBoard.Serwer.Models.Board", b =>
+                {
+                    b.HasOne("TaskBoard.Serwer.Models.User", "User")
+                        .WithMany("Boards")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TaskBoard.Serwer.Models.Column", b =>
                 {
                     b.HasOne("TaskBoard.Serwer.Models.Board", "Board")
@@ -116,6 +156,11 @@ namespace Serwer.Migrations
             modelBuilder.Entity("TaskBoard.Serwer.Models.Column", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("TaskBoard.Serwer.Models.User", b =>
+                {
+                    b.Navigation("Boards");
                 });
 #pragma warning restore 612, 618
         }

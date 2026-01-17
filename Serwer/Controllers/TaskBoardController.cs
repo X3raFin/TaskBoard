@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskBoard.Serwer.Data;
 using TaskBoard.Serwer.Models;
+using TaskBoard.Serwer.Dtos;
 
-namespace Serwer.Controllers
+namespace TaskBoard.Serwer.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
@@ -188,24 +189,5 @@ namespace Serwer.Controllers
 			await _context.SaveChangesAsync();
 			return Ok();
 		}
-	}
-
-	public class CreateDto
-	{
-		public string? Name { get; set; }
-	}
-
-	public class NewBoardDto
-	{
-		public int Id { get; set; }
-		public string? Name { get; set; }
-		public int ColsNumber { get; set; }
-	}
-
-	public class NewTaskDto
-	{
-		public int Id { get; set; }
-		public string? Name { get; set; }
-		public string? Descriptions { get; set; }
 	}
 }

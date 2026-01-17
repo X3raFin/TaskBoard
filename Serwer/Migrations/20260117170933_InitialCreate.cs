@@ -11,17 +11,39 @@ namespace Serwer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Login = table.Column<string>(type: "TEXT", maxLength: 15, nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Boards",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     ColsNumber = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Boards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Boards_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,6 +92,11 @@ namespace Serwer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Boards_UserId",
+                table: "Boards",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Columns_BoardId",
                 table: "Columns",
                 column: "BoardId");
@@ -91,6 +118,9 @@ namespace Serwer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Boards");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }
