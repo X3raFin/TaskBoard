@@ -18,3 +18,40 @@ Główne założenia projektu:
 Pełna obsługa cyklu życia zadań bez przeładowania strony.
 
 ![CRUD Demo](./assets/CRUD.gif)
+
+- **Tworzenie:** Błyskawiczne dodawanie nowych kart do kolumn.
+- **Edycja Stanu:** Intuicyjne oznaczanie zadań jako wykonane (checkbox).
+- **Usuwanie:** Trwałe usuwanie niechcianych elementów z bazy danych.
+
+## 🛠 Stack Technologiczny
+
+### Frontend (Client-Side)
+
+- **React** (TypeScript + Vite) - nowoczesne środowisko SPA.
+- **Tailwind CSS + daisyUI** - system stylów i gotowe komponenty.
+- **Fetch API** - komunikacja z serwerem.
+- **React Hot Toast** - system powiadomień.
+
+### Backend (Server-Side)
+
+- **ASP.NET Core Web API** (.NET 8) - REST API zwracające dane w formacie JSON.
+- **Entity Framework Core** - ORM do obsługi bazy danych.
+- **SQLite** - lekka, plikowa baza danych.
+- **LINQ** - zapytania do danych.
+
+### Architektura i Wzorce
+
+- **Client-Server** - pełna separacja frontendu od backendu.
+- **REST API** - bezstanowa architektura komunikacji.
+- **Dependency Injection (DI)** - wbudowany w .NET kontener IoC.
+- **DTO (Data Transfer Objects)** - bezpieczne przesyłanie danych między API a klientem.
+
+## 🚀 Jak uruchomić projekt?
+
+Wymagania: **Node.js** oraz **.NET 8 SDK**.
+
+1. **Sklonuj repozytorium:**
+   ```bash
+   git clone [https://github.com/X3raFin/TaskBoard.git](https://github.com/X3raFin/TaskBoard.git)
+   cd TaskBoard
+   ```
