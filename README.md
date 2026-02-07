@@ -9,4 +9,10 @@ Główne założenia projektu:
 - **Baza Danych:** Trwałe przechowywanie danych użytkowników, haseł i struktury zadań.
 - **Uwierzytelnianie:** System rejestracji i logowania.
 
+## 🌐 Live Demo
+
 [Link do demo]("Wkrótce się pojawi.")
+
+## 📸 Wygląd
+
+![alt text](image.png)
