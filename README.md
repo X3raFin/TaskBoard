@@ -13,6 +13,8 @@ Główne założenia projektu:
 
 [Link do demo]("Wkrótce się pojawi.")
 
-## 📸 Wygląd
+## ⚡ Interaktywny Dashboard (CRUD)
 
-![alt text](image.png)
+Pełna obsługa cyklu życia zadań bez przeładowania strony.
+
+![CRUD Demo](./assets/CRUD.gif)
