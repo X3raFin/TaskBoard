@@ -41,12 +41,13 @@ function BoardPage() {
 
   const creatingFormHandler = async () => {
     if (!newColumnName.trim()) {
-      setValidationError(true);
-      toast.error("Nazwa kolumny nie może być pusta!");
+      setValidationError(true); // walidacja danych wejsciowych
+      toast.error("Nazwa kolumny nie może być pusta!"); // pokazanie pop-upa w razie bledu
       return;
     }
 
     try {
+      // wyslanie deklaracji stworzenia nowej kolumny
       const response = await fetch(url + params.BoardId, {
         method: "POST",
         headers: {
@@ -56,8 +57,8 @@ function BoardPage() {
       });
       if (!response.ok) throw new Error("Błąd zapisu");
 
-      fetchData();
-      toast.success("Dodano nową kolumnę!");
+      fetchData(); // po udanym dodaniu nowej kolumny odswiezamy widok, by byla ona odrazu widoczna
+      toast.success("Dodano nową kolumnę!"); // informujemy o powodzeniu
       setNewColumnName("");
       setStatus(false);
       setValidationError(false);
@@ -69,7 +70,7 @@ function BoardPage() {
   const creatingTaskFormHandler = async (
     columnId: number,
     name: string,
-    descriptions: string
+    descriptions: string,
   ) => {
     if (!name.trim()) {
       toast.error("Nazwa zadania jest wymagana!");
@@ -100,6 +101,7 @@ function BoardPage() {
   };
 
   const toggleTaskStatus = async (id: number) => {
+    // zmiana statusu zadania na wykonane
     try {
       const response = await fetch(url + "patchTaskStatus/" + id, {
         method: "PATCH",
@@ -107,7 +109,7 @@ function BoardPage() {
           "Content-Type": "application/json",
         },
       });
-      if (response.ok) fetchData();
+      if (response.ok) fetchData(); // jezeli request otrzyma status 200-299 odswiezenie danych na podstronie po udanej zmianie
     } catch (error) {
       toast.error("Nie udało się zmienić statusu.");
     }

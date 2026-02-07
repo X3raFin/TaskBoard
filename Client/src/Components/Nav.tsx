@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 function Nav() {
@@ -6,7 +5,7 @@ function Nav() {
 
   const handleLogout = () => {
     localStorage.removeItem("taskboard_user");
-    window.location.reload();
+    window.location.href = "/";
   };
 
   return (

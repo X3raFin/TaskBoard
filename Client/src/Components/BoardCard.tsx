@@ -126,7 +126,7 @@ export const BoardCard = ({ board, onUpdateName, onDelete }: Props) => {
           <h3 className="card-title text-primary pr-6 truncate">
             {board.name}
           </h3>
-          <p className="text-sm opacity-70">Kolumn: {board.colsNumber}</p>
+          {/* <p className="text-sm opacity-70">Kolumn: {board.colsNumber}</p> */}
         </div>
       </div>
     </Link>

@@ -11,6 +11,7 @@ export const LoginPage = ({ onLogin, onRegister }: LoginProps) => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const validate = () => {
     if (!email) {
@@ -31,21 +32,31 @@ export const LoginPage = ({ onLogin, onRegister }: LoginProps) => {
 
     if (isRegistering) {
       if (!login) {
-        toast.error("Login jest wymagany");
+        // walidacja danych wejsciowych
+        toast.error("Login jest wymagany"); // komunikat zwrotny dla uzytkownika
         return false;
       }
       if (login.length > 15) {
-        toast.error("Login max 15 znaków");
+        // walidacja danych wejsciowych
+        toast.error("Login max 15 znaków"); // komunikat zwrotny dla uzytkownika
         return false;
       }
       if (password.length < 5) {
-        toast.error("Hasło musi mieć min. 5 znaków");
+        // walidacja danych wejsciowych
+        toast.error("Hasło musi mieć min. 5 znaków"); // komunikat zwrotny dla uzytkownika
         return false;
       }
 
       const passRegex = /^(?=.*\d)(?=.*[\W_])[A-Z].*$/;
       if (!passRegex.test(password)) {
-        toast.error("Hasło: wielka litera, cyfra i znak specjalny");
+        // walidacja danych wejsciowych
+        toast.error("Hasło: wielka litera, cyfra i znak specjalny"); // komunikat zwrotny dla uzytkownika
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        // walidacja danych wejsciowych
+        toast.error("Hasła muszą być identyczne"); // komunikat zwrotny dla uzytkownika
         return false;
       }
     }
@@ -60,6 +71,7 @@ export const LoginPage = ({ onLogin, onRegister }: LoginProps) => {
       onRegister(login, email, password);
       setIsRegistering(false);
       setPassword("");
+      setConfirmPassword("");
     } else {
       onLogin(email, password);
     }
@@ -100,7 +112,7 @@ export const LoginPage = ({ onLogin, onRegister }: LoginProps) => {
             />
           </div>
 
-          <div className="form-control w-full mb-4">
+          <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Hasło</span>
             </label>
@@ -109,11 +121,30 @@ export const LoginPage = ({ onLogin, onRegister }: LoginProps) => {
               className="input input-bordered w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              onKeyDown={(e) =>
+                !isRegistering && e.key === "Enter" && handleSubmit()
+              }
             />
           </div>
 
-          <div className="card-actions justify-end mt-4">
+          {isRegistering && (
+            <div className="form-control w-full mb-4">
+              <label className="label">
+                <span className="label-text">Powtórz hasło</span>
+              </label>
+              <input
+                type="password"
+                className="input input-bordered w-full"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              />
+            </div>
+          )}
+
+          <div
+            className={`card-actions justify-end ${!isRegistering ? "mt-4" : ""}`}
+          >
             <button className="btn btn-primary w-full" onClick={handleSubmit}>
               {isRegistering ? "Zarejestruj się" : "Zaloguj się"}
             </button>

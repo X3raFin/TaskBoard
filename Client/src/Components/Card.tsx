@@ -25,7 +25,7 @@ interface CardProps {
 function Card(card: CardProps) {
   return (
     <div className="flex w-full h-full min-h-screen overflow-x-auto bg-base-300 p-6 gap-6 items-start">
-      {card.cols.map((col) => {
+      {card.cols.map((col) => { // w tym miejscu rozpakowujemy obiekt json, ktory przychodzi z requesta
         return (
           <Column
             key={col.id}

@@ -63,7 +63,7 @@ namespace TaskBoard.Serwer.Controllers
 		{
 			var exist = await _context.Columns.AnyAsync(c => c.Name == dto.Name && c.BoardId == BoardId);
 
-			if (exist) return Conflict("Kolumna o podanej nazwie juz istnieje.");
+			if (exist) return Conflict("Kolumna o podanej nazwie juz istnieje."); // obsluga pzypadkow brzegowych
 
 			var newColumnOrder = (await _context.Columns.Where(c => c.BoardId == BoardId).MaxAsync(c => (int?)c.Order) ?? 0) + 1;
 
