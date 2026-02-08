@@ -51,7 +51,32 @@ Pełna obsługa cyklu życia zadań bez przeładowania strony.
 Wymagania: **Node.js** oraz **.NET 8 SDK**.
 
 1. **Sklonuj repozytorium:**
+
    ```bash
    git clone [https://github.com/X3raFin/TaskBoard.git](https://github.com/X3raFin/TaskBoard.git)
-   cd TaskBoard
+   cd B-Productive
    ```
+
+2. **Uruchom Server**
+
+   ```bash
+   cd Serwer
+   dotnet restore
+   dotnet ef database update
+   dotnet run
+   ```
+
+3. **Uruchom Frontend**
+   ```bash
+   cd Client
+   npm install
+   npm run dev
+   ```
+
+## 📬 Kontakt
+
+Autorem projektu jest **Kacper Jankowski**.
+
+- 🌐 **LinkedIn:** [LinkedIn](https://www.linkedin.com/in/kacper-jankowski-webdev/)
+- 📧 **Email:** kacper.jankowski.webdev@gmail.com
+- 💼 **Portfolio:** [Portfolio](tbc)
