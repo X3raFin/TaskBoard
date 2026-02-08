@@ -53,7 +53,7 @@ Wymagania: **Node.js** oraz **.NET 8 SDK**.
 1. **Sklonuj repozytorium:**
 
    ```bash
-   git clone [https://github.com/X3raFin/TaskBoard.git](https://github.com/X3raFin/TaskBoard.git)
+   git clone https://github.com/X3raFin/B-Productive.git
    cd B-Productive
    ```
 
