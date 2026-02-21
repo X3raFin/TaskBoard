@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 
 interface Board {
@@ -17,20 +17,20 @@ export const BoardCard = ({ board, onUpdateName, onDelete }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(board.name);
 
-  const startEditing = (e: React.MouseEvent) => {
+  const startEditing = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsEditing(true);
     setEditName(board.name);
   };
 
-  const cancelEditing = (e: React.MouseEvent) => {
+  const cancelEditing = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsEditing(false);
   };
 
-  const handleSave = (e: React.MouseEvent) => {
+  const handleSave = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (editName.trim()) {

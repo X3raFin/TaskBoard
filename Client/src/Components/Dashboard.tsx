@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import "../App.css";
 import { LoginPage } from "./LoginPage";
 import { BoardCard } from "./BoardCard";
@@ -103,7 +103,7 @@ function Dashboard() {
     }
   };
 
-  const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeNameValue = (event: ChangeEvent<HTMLInputElement>) => {
     setNewBoardName(event.target.value);
     if (validationError) setValidationError(false);
   };

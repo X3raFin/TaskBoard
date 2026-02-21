@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import Column from "./Column";
 import type { ColumnStuff } from "./BoardPage";
 
@@ -12,7 +13,7 @@ interface CardProps {
     descriptions: string
   ) => void;
   setStatus: (value: boolean) => void;
-  changeNameValue: (value: React.ChangeEvent<HTMLInputElement>) => void;
+  changeNameValue: (value: ChangeEvent<HTMLInputElement>) => void;
   creatingFormHandler: () => void;
   updateColumnName: (id: number, name: string) => void;
   updateTaskName: (id: number, name: string) => void;
@@ -62,7 +63,7 @@ function Card(card: CardProps) {
                 if (card.validationError && card.changeNameValue) {
                   const event = {
                     target: { value: "" },
-                  } as React.ChangeEvent<HTMLInputElement>;
+                  } as ChangeEvent<HTMLInputElement>;
                   card.changeNameValue(event);
                 }
               }}

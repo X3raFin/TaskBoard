@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import "../App.css";
 import Card from "./Card";
@@ -193,7 +193,7 @@ function BoardPage() {
     }
   };
 
-  const changeNameValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const changeNameValue = (event: ChangeEvent<HTMLInputElement>) => {
     setNewColumnName(event.target.value);
     if (validationError) setValidationError(false);
   };
