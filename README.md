@@ -57,7 +57,7 @@ Prerequisites: **Node.js** and **.NET 8 SDK**.
 1. **Clone the repository:**
 
    ```bash
-   git clone [https://github.com/X3raFin/B-Productive.git](https://github.com/X3raFin/B-Productive.git)
+   git clone https://github.com/X3raFin/B-Productive.git
    cd B-Productive
    ```
 
