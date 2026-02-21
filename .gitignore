@@ -9,7 +9,6 @@ obj/
 # Common node modules locations
 /node_modules
 /wwwroot/node_modules
-/tresc.txt
 
 ### macOS ###
 # General
@@ -95,7 +94,7 @@ web_modules/
 # TypeScript cache
 *.tsbuildinfo
 
-# Optional npm cache directory
+# Optional npm cache
 .npm
 
 # Optional eslint cache
@@ -442,7 +441,7 @@ csx/
 *.build.csdef
 
 # Microsoft Azure Emulator
-ecf/
+ecff/
 rcf/
 
 # Windows Store app package directories and files
@@ -618,3 +617,16 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode,visualstudio,dotnetcore,windows,macos
+
+
+#################
+# Project-specific ignores
+#################
+
+# SQLite database files
+/Serwer/taskboard.db
+/Serwer/taskboard.db-shm
+/Serwer/taskboard.db-wal
+
+# User-specific launch settings
+**/Properties/launchSettings.json

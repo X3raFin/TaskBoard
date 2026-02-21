@@ -65,7 +65,6 @@ Prerequisites: **Node.js** and **.NET 8 SDK**.
 
    ```bash
    cd Serwer
-   dotnet restore
    dotnet ef database update
    dotnet run
    ```
