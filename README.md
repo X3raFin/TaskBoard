@@ -8,10 +8,6 @@ Key project features:
 - **Full CRUD:** Create, read, update, and delete tasks and boards.
 - **Database:** Persistent storage of user data, passwords, and task structures.
 
-## 🌐 Live Demo
-
-🚀 **Live Demo:** _Coming soon._
-
 ## ⚡ Interactive Dashboard
 
 Full task lifecycle management without page reloads.
@@ -21,6 +17,12 @@ Full task lifecycle management without page reloads.
 - **Creation:** Instantly add new cards to columns.
 - **State Editing:** Intuitive task completion toggling via checkboxes, and easy renaming by clicking the pencil icon.
 - **Deletion:** Permanently remove unwanted items from the database.
+
+## 🔐 Authentication & Registration
+
+Complete user flow demonstrating successful API communication and database integration.
+
+![Authentication Demo](./assets/Autentykacja.gif)
 
 ## 🛠 Tech Stack
 
