@@ -75,3 +75,11 @@ Prerequisites: **Node.js** and **.NET 8 SDK**.
    npm install
    npm run dev
    ```
+
+## 📬 Contact
+
+Created by **Kacper Jankowski**.
+
+- 🌐 **LinkedIn:** [LinkedIn](https://www.linkedin.com/in/kacper-jankowski-webdev/)
+- 📧 **Email:** kacper.jankowski.webdev@gmail.com
+- 💼 **Portfolio:** [Portfolio](tbc)
