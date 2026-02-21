@@ -1,63 +1,67 @@
 # 📊 B-Productive (Kanban Board)
 
-Mój pierwszy projekt **Full-Stack**, łączący warstwę serwerową z interfejsem klienta. Aplikacja typu Kanban służąca do organizacji zadań i zwiększania produktywności.
+My first **Full-Stack** project, connecting a server-side API with a client interface. A Kanban-style application designed for task organization and productivity enhancement.
 
-Główne założenia projektu:
+Key project features:
 
-- **Architektura Client-Server:** Oddzielny frontend i backend.
-- **Pełny CRUD:** Tworzenie, odczyt, aktualizacja i usuwanie zadań oraz tablic.
-- **Baza Danych:** Trwałe przechowywanie danych użytkowników, haseł i struktury zadań.
-- **Uwierzytelnianie:** System rejestracji i logowania.
+- **Client-Server Architecture:** Complete separation of frontend and backend.
+- **Full CRUD:** Create, read, update, and delete tasks and boards.
+- **Database:** Persistent storage of user data, passwords, and task structures.
 
 ## 🌐 Live Demo
 
-[Link do demo]("Wkrótce się pojawi.")
+🚀 **Live Demo:** _Coming soon._
 
-## ⚡ Interaktywny Dashboard (CRUD)
+## ⚡ Interactive Dashboard
 
-Pełna obsługa cyklu życia zadań bez przeładowania strony.
+Full task lifecycle management without page reloads.
 
 ![CRUD Demo](./assets/CRUD.gif)
 
-- **Tworzenie:** Błyskawiczne dodawanie nowych kart do kolumn.
-- **Edycja Stanu:** Intuicyjne oznaczanie zadań jako wykonane (checkbox).
-- **Usuwanie:** Trwałe usuwanie niechcianych elementów z bazy danych.
+- **Creation:** Instantly add new cards to columns.
+- **State Editing:** Intuitive task completion toggling via checkboxes, and easy renaming by clicking the pencil icon.
+- **Deletion:** Permanently remove unwanted items from the database.
 
-## 🛠 Stack Technologiczny
+## 🛠 Tech Stack
 
 ### Frontend (Client-Side)
 
-- **React** (TypeScript + Vite) - nowoczesne środowisko SPA.
-- **Tailwind CSS + daisyUI** - system stylów i gotowe komponenty.
-- **Fetch API** - komunikacja z serwerem.
-- **React Hot Toast** - system powiadomień.
+- **React** (TypeScript + Vite) - modern SPA environment.
+- **Tailwind CSS + daisyUI** - styling system and ready-to-use UI components.
+- **Fetch API** - communication with the backend.
+- **React Hot Toast** - notification system.
 
 ### Backend (Server-Side)
 
-- **ASP.NET Core Web API** (.NET 8) - REST API zwracające dane w formacie JSON.
-- **Entity Framework Core** - ORM do obsługi bazy danych.
-- **SQLite** - lekka, plikowa baza danych.
-- **LINQ** - zapytania do danych.
+- **ASP.NET Core Web API** (.NET 8) - REST API returning JSON data.
+- **Entity Framework Core** - ORM for database operations.
+- **SQLite** - lightweight, file-based database.
+- **LINQ** - data querying and manipulation.
 
-### Architektura i Wzorce
+### Architecture & Patterns
 
-- **Client-Server** - pełna separacja frontendu od backendu.
-- **REST API** - bezstanowa architektura komunikacji.
-- **Dependency Injection (DI)** - wbudowany w .NET kontener IoC.
-- **DTO (Data Transfer Objects)** - bezpieczne przesyłanie danych między API a klientem.
+- **Client-Server** - total separation of frontend and backend layers.
+- **REST API** - stateless communication architecture.
+- **Dependency Injection (DI)** - built-in .NET IoC container.
+- **DTO (Data Transfer Objects)** - secure data transfer between the API and the client.
 
-## 🚀 Jak uruchomić projekt?
+### 🔜 Roadmap (To-Do)
 
-Wymagania: **Node.js** oraz **.NET 8 SDK**.
+- [ ] **JWT Authentication:** Implement secure login with JSON Web Tokens.
+- [ ] **Drag & Drop:** Add drag-and-drop functionality for boards, columns, and tasks.
 
-1. **Sklonuj repozytorium:**
+## 🚀 Getting Started
+
+Prerequisites: **Node.js** and **.NET 8 SDK**.
+
+1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/X3raFin/B-Productive.git
+   git clone [https://github.com/X3raFin/B-Productive.git](https://github.com/X3raFin/B-Productive.git)
    cd B-Productive
    ```
 
-2. **Uruchom Server**
+2. **Run the Backend**
 
    ```bash
    cd Serwer
@@ -66,17 +70,9 @@ Wymagania: **Node.js** oraz **.NET 8 SDK**.
    dotnet run
    ```
 
-3. **Uruchom Frontend**
+3. **Run the Frontend**
    ```bash
    cd Client
    npm install
    npm run dev
    ```
-
-## 📬 Kontakt
-
-Autorem projektu jest **Kacper Jankowski**.
-
-- 🌐 **LinkedIn:** [LinkedIn](https://www.linkedin.com/in/kacper-jankowski-webdev/)
-- 📧 **Email:** kacper.jankowski.webdev@gmail.com
-- 💼 **Portfolio:** [Portfolio](tbc)
